@@ -5,6 +5,7 @@ const {v4: uuidv4} = require('uuid')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
+const axios = require('axios')
 require('dotenv').config()
 
 const uri = process.env.URI
@@ -48,7 +49,7 @@ app.post('/signup', async (req, res) => {
         const insertedUser = await users.insertOne(data)
 
         const token = jwt.sign(insertedUser, sanitizedEmail, {
-            expiresIn: 60 * 24
+            expiresIn: 365 * 24
         })
         res.status(201).json({token, userId: generatedUserId})
 
@@ -58,6 +59,57 @@ app.post('/signup', async (req, res) => {
         await client.close()
     }
 })
+
+app.get('/get_cf_token', async (req, res) => {
+    const client = new MongoClient(uri)
+    const username = req.query.username
+
+    try {
+        await client.connect()
+        const database = client.db('app-data')
+        const tokens = database.collection('cf-auth-token')
+        const query = {username: username}
+        user = await tokens.findOne(query)
+        token = uuidv4()
+        if(user){
+            const updateDocument = {
+                $set: {token: token}
+            }
+            await tokens.updateOne(query, updateDocument)
+        } else {
+            user = {
+                username: username,
+                token: token
+            }
+            await tokens.insertOne(user)
+        }
+        res.send(token)
+
+    } finally {
+        await client.close()
+    }
+})
+
+app.get('/verify_cf_token', async (req, res) => {
+    const client = new MongoClient(uri)
+    const username = req.query.username
+
+    try {
+        await client.connect()
+        const database = client.db('app-data')
+        const tokens = database.collection('cf-auth-token')
+        const query = {username: username}
+        user = await tokens.findOne(query)
+        const CFres = await axios.get(`https://codeforces.com/api/user.info?handles=${username}`)
+        const firstName = CFres.data.result[0].firstName
+        verified = false
+        if(user && firstName === user.token) verified = true
+        res.send({verified: verified})
+    } finally {
+        await client.close()
+    }
+})
+
 
 // Log in to the Database
 app.post('/login', async (req, res) => {
@@ -75,7 +127,7 @@ app.post('/login', async (req, res) => {
 
         if (user && correctPassword) {
             const token = jwt.sign(user, email, {
-                expiresIn: 60 * 24
+                expiresIn: 365 * 24
             })
             res.status(201).json({token, userId: user.user_id})
         }

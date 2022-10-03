@@ -2,12 +2,14 @@ import Nav from '../components/Nav'
 import AuthModal from "../components/AuthModal"
 import {useState} from 'react'
 import {useCookies} from "react-cookie"
+const {v4: uuidv4} = require('uuid')
 
 const Home = () => {
     const [showModal, setShowModal] = useState(false)
     const [isSignUp, setIsSignUp] = useState(true)
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const authToken = cookies.AuthToken
+    const CFAuthToken = uuidv4()
 
     const handleClick = () => {
         if (authToken) {
@@ -37,7 +39,7 @@ const Home = () => {
 
 
                 {showModal && (
-                    <AuthModal setShowModal={setShowModal} isSignUp={isSignUp}/>
+                    <AuthModal setShowModal={setShowModal} isSignUp={isSignUp} CFAuthToken={CFAuthToken}/>
                 )}
             </div>
         </div>
