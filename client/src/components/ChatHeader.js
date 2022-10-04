@@ -7,7 +7,7 @@ const ChatHeader = ({ user }) => {
 
 
     const logout = () => {
-        removeCookie('UserId', cookies.UserId)
+        removeCookie('Username', cookies.Username)
         removeCookie('AuthToken', cookies.AuthToken)
         navigate('/')
     }

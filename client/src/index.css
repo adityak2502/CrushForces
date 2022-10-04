@@ -45,6 +45,17 @@ h2 {
     margin: 6px;
 }
 
+.tertiary-button {
+    color: rgb(121, 119, 119);
+    background-color: rgb(255, 255, 255);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: solid 2px rgb(121, 119, 119);
+    margin: 6px;
+}
+
 .secondary-button:hover {
     color: rgb(48, 48, 48);
     border: solid 2px rgb(48, 48, 48);
@@ -123,7 +134,7 @@ nav .logo-container .logo {
     flex-direction: column;
 }
 
-.auth-modal input {
+.auth-modal input, button {
     padding: 8px;
     margin: 8px;
     font-size: 17px;

@@ -6,4 +6,5 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 ## TODO
-Make signup also with cookie to avoid waiting attack
+Authenticate cookies and add middlewares, video is using email as secret_token
+Hash password with random secret

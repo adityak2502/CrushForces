@@ -7,8 +7,9 @@ import axios from 'axios'
 const OnBoarding = () => {
     const [cookies, setCookie, removeCookie] = useCookies(null)
     const [formData, setFormData] = useState({
-        user_id: cookies.UserId,
+        username: cookies.Username,
         first_name: "",
+        last_name: "",
         dob_day: "",
         dob_month: "",
         dob_year: "",
@@ -34,7 +35,6 @@ const OnBoarding = () => {
         } catch (err) {
             console.log(err)
         }
-
     }
 
     const handleChange = (e) => {
@@ -70,6 +70,16 @@ const OnBoarding = () => {
                             placeholder="First Name"
                             required={true}
                             value={formData.first_name}
+                            onChange={handleChange}
+                        />
+                        <label htmlFor="last_name">Last Name</label>
+                        <input
+                            id="last_name"
+                            type='text'
+                            name="last_name"
+                            placeholder="Last Name"
+                            required={true}
+                            value={formData.last_name}
                             onChange={handleChange}
                         />
 

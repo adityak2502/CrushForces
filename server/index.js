@@ -6,9 +6,11 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const axios = require('axios')
+const base64 = require('uuid-base64')
 require('dotenv').config()
 
 const uri = process.env.URI
+const JWT_SECRET = process.env.JWT_SECRET
 
 const app = express()
 app.use(cors())
@@ -19,120 +21,165 @@ app.get('/', (req, res) => {
     res.json('Hello to my app')
 })
 
+const verify_cf_token = async(curUsername, curCFToken, CFJWTToken) => {
+    try {
+        const { username, token } = await jwt.verify(CFJWTToken, JWT_SECRET)
+        const CFres = await axios.get(`https://codeforces.com/api/user.info?handles=${username}`)
+        const firstName = CFres.data.result[0].firstName
+        if(username === curUsername && token === curCFToken && firstName === token){
+            return true
+        } else{
+            return false
+        }
+    } catch(error){
+        return false
+    }
+}
+
 // Sign up to the Database
 app.post('/signup', async (req, res) => {
     const client = new MongoClient(uri)
-    const {email, password} = req.body
-
+    let {username, password, CFToken, CFJWTToken} = req.body
+    
     const generatedUserId = uuidv4()
     const hashedPassword = await bcrypt.hash(password, 10)
-
     try {
-        await client.connect()
-        const database = client.db('app-data')
-        const users = database.collection('users')
-
-        const existingUser = await users.findOne({email})
-
-        if (existingUser) {
-            return res.status(409).send('User already exists. Please login')
+        if(await verify_cf_token(username, CFToken, CFJWTToken)){
+            console.log("CF verified")
+            await client.connect()
+            const database = client.db('app-data')
+            const users = database.collection('users')
+    
+            const existingUser = await users.findOne({username})
+    
+            if (existingUser) {
+                return res.status(409).send('User already exists. Please login')
+            }
+    
+            const data = {
+                user_id: generatedUserId,
+                username: username,
+                hashed_password: hashedPassword
+            }
+    
+            await users.insertOne(data)
+    
+            const token = jwt.sign({username}, JWT_SECRET, {
+                expiresIn: 365 * 24
+            })
+            return res.status(201).json({token, username})
+        } else{
+            console.log("NOT VERIFIED")
+            return res.status(401).json('Token did not match. Please generate a token and set this as your CF first name')
         }
-
-        const sanitizedEmail = email.toLowerCase()
-
-        const data = {
-            user_id: generatedUserId,
-            email: sanitizedEmail,
-            hashed_password: hashedPassword
-        }
-
-        const insertedUser = await users.insertOne(data)
-
-        const token = jwt.sign(insertedUser, sanitizedEmail, {
-            expiresIn: 365 * 24
-        })
-        res.status(201).json({token, userId: generatedUserId})
-
     } catch (err) {
         console.log(err)
+        return res.status(401).json('Token did not match. Please generate a token and set this as your CF first name')
     } finally {
         await client.close()
     }
 })
+
 
 app.get('/get_cf_token', async (req, res) => {
-    const client = new MongoClient(uri)
-    const username = req.query.username
-
+    
     try {
-        await client.connect()
-        const database = client.db('app-data')
-        const tokens = database.collection('cf-auth-token')
-        const query = {username: username}
-        user = await tokens.findOne(query)
-        token = uuidv4()
-        if(user){
-            const updateDocument = {
-                $set: {token: token}
-            }
-            await tokens.updateOne(query, updateDocument)
-        } else {
-            user = {
-                username: username,
-                token: token
-            }
-            await tokens.insertOne(user)
+        // const client = new MongoClient(uri)
+        const username = req.query.username
+        const token = uuidv4()
+        const jwt_token = jwt.sign({username, token}, JWT_SECRET, {
+            expiresIn: 365 * 24
+        })
+        response = {
+            CF_token: token,
+            jwt_token: jwt_token
         }
-        res.send(token)
-
-    } finally {
-        await client.close()
+        res.send(response)
+    //     await client.connect()
+    //     const database = client.db('app-data')
+    //     const tokens = database.collection('cf-auth-token')
+    //     const query = {username: username}
+    //     user = await tokens.findOne(query)
+    //     token = uuidv4()
+    //     if(user){
+    //         const updateDocument = {
+    //             $set: {token: token}
+    //         }
+    //         await tokens.updateOne(query, updateDocument)
+    //     } else {
+    //         user = {
+    //             username: username,
+    //             token: token
+    //         }
+    //         await tokens.insertOne(user)
+    //     }
+    //     const jwt_token = jwt.sign({username, token}, JWT_SECRET, {
+    //         expiresIn: 365 * 24
+    //     })
+    //     response = {
+    //         CF_token: token,
+    //         jwt_token: jwt_token
+    //     }
+    //     res.send(response)
+    } catch(error){
+        console.log(error)
     }
+
+    // } finally {
+    //     // await client.close()
+    // }
 })
 
-app.get('/verify_cf_token', async (req, res) => {
-    const client = new MongoClient(uri)
-    const username = req.query.username
+// app.get('/verify_cf_token', async (req, res) => {
+//     try {
+//         const curUsername = req.query.username
+//         const curCFToken = req.query.CFToken
+//         const CFJWTToken = req.query.CFJWTToken
+//         const { username, token } = await jwt.verify(CFJWTToken, JWT_SECRET)
+//         const CFres = await axios.get(`https://codeforces.com/api/user.info?handles=${username}`)
+//         const firstName = CFres.data.result[0].firstName
+//         if(username == curUsername && token == curCFToken && firstName == token){
+//             res.status(201).json({token, userId: user.user_id})
+//         }
+    
 
-    try {
-        await client.connect()
-        const database = client.db('app-data')
-        const tokens = database.collection('cf-auth-token')
-        const query = {username: username}
-        user = await tokens.findOne(query)
-        const CFres = await axios.get(`https://codeforces.com/api/user.info?handles=${username}`)
-        const firstName = CFres.data.result[0].firstName
-        verified = false
-        if(user && firstName === user.token) verified = true
-        res.send({verified: verified})
-    } finally {
-        await client.close()
-    }
-})
+
+//         // await client.connect()
+//         // const database = client.db('app-data')
+//         // const tokens = database.collection('cf-auth-token')
+//         // const query = {username: username}
+//         // user = await tokens.findOne(query)
+//         // verified = false
+//         // if(user && firstName === user.token) verified = true
+//         // res.send({verified: verified})
+//     } finally {
+//         await client.close()
+//     }
+// })
 
 
 // Log in to the Database
 app.post('/login', async (req, res) => {
     const client = new MongoClient(uri)
-    const {email, password} = req.body
+    const {username, password} = req.body
 
     try {
         await client.connect()
         const database = client.db('app-data')
         const users = database.collection('users')
 
-        const user = await users.findOne({email})
+        const user = await users.findOne({username})
 
         const correctPassword = await bcrypt.compare(password, user.hashed_password)
 
         if (user && correctPassword) {
-            const token = jwt.sign(user, email, {
+            const token = jwt.sign({username}, JWT_SECRET, {
                 expiresIn: 365 * 24
             })
             res.status(201).json({token, userId: user.user_id})
+        } else{
+            res.status(400).json('Invalid Credentials')
         }
-
-        res.status(400).json('Invalid Credentials')
 
     } catch (err) {
         console.log(err)
@@ -144,14 +191,14 @@ app.post('/login', async (req, res) => {
 // Get individual user
 app.get('/user', async (req, res) => {
     const client = new MongoClient(uri)
-    const userId = req.query.userId
+    const username = req.query.username
 
     try {
         await client.connect()
         const database = client.db('app-data')
         const users = database.collection('users')
 
-        const query = {user_id: userId}
+        const query = {username}
         const user = await users.findOne(query)
         res.send(user)
 
@@ -163,16 +210,17 @@ app.get('/user', async (req, res) => {
 // Update User with a match
 app.put('/addmatch', async (req, res) => {
     const client = new MongoClient(uri)
-    const {userId, matchedUserId} = req.body
+    const {Username, matchedUserName} = req.body
+    console.log(Username, matchedUserName)
 
     try {
         await client.connect()
         const database = client.db('app-data')
         const users = database.collection('users')
 
-        const query = {user_id: userId}
+        const query = {username: Username}
         const updateDocument = {
-            $push: {matches: {user_id: matchedUserId}}
+            $push: {matches: {username: matchedUserName}}
         }
         const user = await users.updateOne(query, updateDocument)
         res.send(user)
@@ -181,7 +229,7 @@ app.put('/addmatch', async (req, res) => {
     }
 })
 
-// Get all Users by userIds in the Database
+// Get all Users in the Database
 app.get('/all-users', async (req, res) => {
     const client = new MongoClient(uri)
 
@@ -201,7 +249,7 @@ app.get('/all-users', async (req, res) => {
 // Get all Users by userIds in the Database
 app.get('/users', async (req, res) => {
     const client = new MongoClient(uri)
-    const userIds = JSON.parse(req.query.userIds)
+    const usernames = JSON.parse(req.query.usernames)
 
     try {
         await client.connect()
@@ -212,8 +260,8 @@ app.get('/users', async (req, res) => {
             [
                 {
                     '$match': {
-                        'user_id': {
-                            '$in': userIds
+                        'username': {
+                            '$in': usernames
                         }
                     }
                 }
@@ -256,7 +304,7 @@ app.put('/user', async (req, res) => {
         const database = client.db('app-data')
         const users = database.collection('users')
 
-        const query = {user_id: formData.user_id}
+        const query = {username: formData.username}
 
         const updateDocument = {
             $set: {

@@ -9,11 +9,10 @@ const Home = () => {
     const [isSignUp, setIsSignUp] = useState(true)
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const authToken = cookies.AuthToken
-    const CFAuthToken = uuidv4()
 
     const handleClick = () => {
         if (authToken) {
-            removeCookie('UserId', cookies.UserId)
+            removeCookie('Username', cookies.Username)
             removeCookie('AuthToken', cookies.AuthToken)
             window.location.reload()
             return
@@ -39,7 +38,7 @@ const Home = () => {
 
 
                 {showModal && (
-                    <AuthModal setShowModal={setShowModal} isSignUp={isSignUp} CFAuthToken={CFAuthToken}/>
+                    <AuthModal setShowModal={setShowModal} isSignUp={isSignUp}/>
                 )}
             </div>
         </div>
