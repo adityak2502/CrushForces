@@ -1,23 +1,20 @@
 import { useState} from 'react'
 import axios from 'axios'
 
-const ChatInput = ({ user, clickedUser, getUserMessages, getClickedUsersMessages }) => {
+const ChatInput = ({ user, clickedUser, getUserMessages, AuthToken }) => {
     const [textArea, setTextArea] = useState("")
-    const userId = user?.user_id
-    const clickedUserId = clickedUser?.user_id
-
+    const Username = user?.username
+    const clickedUsername = clickedUser?.username
     const addMessage = async () => {
         const message = {
+            to_username: clickedUsername,
             timestamp: new Date().toISOString(),
-            from_userId: userId,
-            to_userId: clickedUserId,
             message: textArea
         }
-
         try {
-            await axios.post('http://localhost:8000/message', { message })
+            await axios.post('http://localhost:8000/message', { username: Username, message },
+            {headers: {"Authorization" : `Bearer ${AuthToken}`}})
             getUserMessages()
-            getClickedUsersMessages()
             setTextArea("")
         } catch (error) {
             console.log(error)

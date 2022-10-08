@@ -11,14 +11,13 @@ const Dashboard = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
 
     const Username = cookies.Username
-
-
+    const AuthToken = cookies.AuthToken
+    
     const getUser = async () => {
         try {
             const response = await axios.get('http://localhost:8000/user', {
                 params: {username: Username}
             })
-            console.log(response.data)
             setUser(response.data)
         } catch (error) {
             console.log(error)
@@ -51,9 +50,10 @@ const Dashboard = () => {
     const updateMatches = async (matchedUserName) => {
         try {
             await axios.put('http://localhost:8000/addmatch', {
-                Username,
+                username: Username,
                 matchedUserName
-            })
+            },
+            {headers: {"Authorization" : `Bearer ${AuthToken}`}})
             getUser()
         } catch (err) {
             console.log(err)
@@ -82,7 +82,7 @@ const Dashboard = () => {
         <> 
             {user &&
             <div className="dashboard">
-                <ChatContainer user={user}/>
+                <ChatContainer user={user} AuthToken={AuthToken}/>
                 <div className="swipe-container">
                     <div className="card-container">
 
