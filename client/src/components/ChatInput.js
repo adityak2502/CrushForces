@@ -28,7 +28,7 @@ const ChatInput = ({ user, clickedUser, getUserMessages, getClickedUsersMessages
     return (
         <div className="chat-input">
             <textarea value={textArea} onChange={(e) => setTextArea(e.target.value)}/>
-            <button className="secondary-button" onClick={addMessage}>Submit</button>
+            <button className="secondary-button" onClick={addMessage}>Send</button>
         </div>
     )
 }

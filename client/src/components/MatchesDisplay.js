@@ -38,9 +38,9 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
           onClick={() => setClickedUser(match)}
         >
           <div className="img-container">
-            <img src={match?.url} alt={match?.first_name + " profile"} />
+            <img src={match?.url} alt={match?.username + " profile"} />
           </div>
-          <h3>{match?.first_name}</h3>
+          <h3>{match?.username}</h3>
         </div>
       ))}
     </div>

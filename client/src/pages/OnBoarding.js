@@ -21,12 +21,14 @@ const OnBoarding = () => {
         matches: []
 
     })
+    const [submitText, setSubmitText] = useState("Submit")
 
     let navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         console.log('submitted')
         e.preventDefault()
+        setSubmitText("Submitting")
         try {
             const response = await axios.put('http://localhost:8000/user', {formData})
             console.log(response)
@@ -201,7 +203,7 @@ const OnBoarding = () => {
                             onChange={handleChange}
                         />
 
-                        <input type="submit"/>
+                        <input type="submit" value={submitText}/>
                     </section>
 
                     <section>

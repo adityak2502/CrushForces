@@ -41,7 +41,7 @@ const ChatDisplay = ({ user , clickedUser }) => {
 
     usersMessages?.forEach(message => {
         const formattedMessage = {}
-        formattedMessage['name'] = user?.first_name
+        formattedMessage['name'] = user?.username
         formattedMessage['img'] = user?.url
         formattedMessage['message'] = message.message
         formattedMessage['timestamp'] = message.timestamp
@@ -50,7 +50,7 @@ const ChatDisplay = ({ user , clickedUser }) => {
 
     clickedUsersMessages?.forEach(message => {
         const formattedMessage = {}
-        formattedMessage['name'] = clickedUser?.first_name
+        formattedMessage['name'] = clickedUser?.username
         formattedMessage['img'] = clickedUser?.url
         formattedMessage['message'] = message.message
         formattedMessage['timestamp'] = message.timestamp

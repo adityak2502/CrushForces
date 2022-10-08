@@ -91,17 +91,17 @@ const Dashboard = () => {
                                 className="swipe"
                                 key={genderedUser.username}
                                 onSwipe={(dir) => swiped(dir, genderedUser.username)}
-                                onCardLeftScreen={() => outOfFrame(genderedUser.first_name)}>
+                                onCardLeftScreen={() => outOfFrame(genderedUser.username)}>
                                 <div
                                     style={{backgroundImage: "url(" + genderedUser.url + ")"}}
                                     className="card">
-                                    <h3>{genderedUser.first_name}</h3>
+                                    <h3>{genderedUser.username}</h3>
                                 </div>
                             </TinderCard>
                         )}
                         {!filteredGenderedUsers?.length && 
                             <div>
-                                No more users available to review
+                                No more users available to swipe
                             </div>
                         }
                         <div className="swipe-info">
