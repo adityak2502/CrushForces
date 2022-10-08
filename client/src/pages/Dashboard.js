@@ -99,6 +99,11 @@ const Dashboard = () => {
                                 </div>
                             </TinderCard>
                         )}
+                        {!filteredGenderedUsers?.length && 
+                            <div>
+                                No more users available to review
+                            </div>
+                        }
                         <div className="swipe-info">
                             {lastDirection ? <p>You swiped {lastDirection}</p> : <p/>}
                         </div>

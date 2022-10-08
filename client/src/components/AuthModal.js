@@ -42,8 +42,8 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                     return
                 }
             }
-            setUsername(verifyingUsername)
-            setError("Verifying CF token")
+            if(isSignUp) setUsername(verifyingUsername)
+            setError(isSignUp ? "Verifying CF token" : "Logging in")
             axios.post(`http://localhost:8000/${isSignUp ? 'signup' : 'login'}`, { username, password, CFToken, CFJWTToken }).then(res => {
                 setCookie('AuthToken', res.data.token)
                 setCookie('Username', res.data.username)
@@ -90,7 +90,9 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                     required={true}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />}
-                <button className="tertiary-button" onClick={handleTokenClick}>Generate {CFToken ? 'another' : ''} token for {username ? username : 'username'}</button>
+                {isSignUp && 
+                    <button className="tertiary-button" onClick={handleTokenClick}>Generate {CFToken ? 'another' : ''} token for {username ? username : 'username'}</button>
+                }
                 {isSignUp && CFToken &&
                     <p> Token for {verifyingUsername} generated. Please set Codeforces profile first name as <br />{CFToken}</p>
                 }

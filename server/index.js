@@ -45,7 +45,6 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     try {
         if(await verify_cf_token(username, CFToken, CFJWTToken)){
-            console.log("CF verified")
             await client.connect()
             const database = client.db('app-data')
             const users = database.collection('users')
@@ -69,7 +68,6 @@ app.post('/signup', async (req, res) => {
             })
             return res.status(201).json({token, username})
         } else{
-            console.log("NOT VERIFIED")
             return res.status(401).json('Token did not match. Please generate a token and set this as your CF first name')
         }
     } catch (err) {
@@ -169,18 +167,16 @@ app.post('/login', async (req, res) => {
         const users = database.collection('users')
 
         const user = await users.findOne({username})
-
-        const correctPassword = await bcrypt.compare(password, user.hashed_password)
+        const correctPassword = user && await bcrypt.compare(password, user.hashed_password)
 
         if (user && correctPassword) {
             const token = jwt.sign({username}, JWT_SECRET, {
                 expiresIn: 365 * 24
             })
-            res.status(201).json({token, userId: user.user_id})
+            res.status(201).json({token, username})
         } else{
             res.status(400).json('Invalid Credentials')
         }
-
     } catch (err) {
         console.log(err)
     } finally {
