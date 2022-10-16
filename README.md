@@ -84,10 +84,10 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 Dating site for Competitive Programmers
+
+
+
 
 <!-- Here's why: -->
 <!-- * Your time should be focused on creating something amazing. A project that solves a problem and helps others
@@ -159,25 +159,23 @@ Install npm
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+Create account using Codeforces handle
+![Screenshot 2022-10-16 231648](https://user-images.githubusercontent.com/53906490/196050261-f4c0d45d-9edd-468f-b41a-731f953d534f.png)
+Swipe left or right
+![Screenshot 2022-10-16 232622](https://user-images.githubusercontent.com/53906490/196050597-52417d10-b092-4403-92e8-fd145e08ca1f.png)
+Chat with your matches
+![image](https://user-images.githubusercontent.com/53906490/196050671-53ac6dac-bbbc-451c-94a2-e252647d98a7.png)
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+- [x] Add CF authentication
+- [ ] Add CF rating
+- [ ] Make matches table with secure queries
+- [ ] DB schema
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 
@@ -204,35 +202,6 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
@@ -255,12 +224,8 @@ Use this space to list resources you find helpful and would like to give credit 
 [JWT]: https://img.shields.io/badge/json%20web%20tokens-323330?style=for-the-badge&logo=json-web-tokens&logoColor=pink
 [JWT-url]: https://jwt.io/
 
-Copyright (c) Ania Kubow
+<!-- Copyright (c) Ania Kubow
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-## TODO
-Authenticate cookies and add middlewares, video is using email as secret_token
-Hash password with random secret
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. -->
