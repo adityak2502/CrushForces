@@ -154,6 +154,38 @@ app.get('/user', async (req, res) => {
     }
 })
 
+app.get('/matches', async (req, res) => {
+    const client = new MongoClient(uri)
+    const {username} = req.query
+    try {
+        await client.connect()
+        const database = client.db('app-data')
+        const users = database.collection('users')
+        const matches = database.collection('matches')
+        query = {
+            $and: [
+                {userA: username},
+                {AswipedB: true},
+                {BswipedA: true}
+            ]
+        }
+        const userMatches = await matches.find(query).toArray()
+        matchedUsers = []
+        const getMatchedUsers = (userMatches) => {
+            userMatches.map(async(matches) => {
+                const query = {username: matches.userB}
+                console.log(query)
+                const fuser = await users.findOne(query)
+                matchedUsers.push(fuser)
+            })
+        }
+        await getMatchedUsers(userMatches)
+        res.send(matchedUsers)
+    } finally {
+        await client.close()
+    }
+})
+
 // Update User with a match
 app.put('/addmatch', checkRootLogin, async (req, res) => {
     const client = new MongoClient(uri)
@@ -161,14 +193,24 @@ app.put('/addmatch', checkRootLogin, async (req, res) => {
     try {
         await client.connect()
         const database = client.db('app-data')
-        const users = database.collection('users')
+        const matches = database.collection('matches')
 
-        const query = {username}
-        const updateDocument = {
-            $push: {matches: {username: matchedUserName}}
+        const query1 = {userA: username, userB: matchedUserName}
+        const updateDocument1 = {
+            $set: {
+                AswipedB: true
+            },
         }
-        const user = await users.updateOne(query, updateDocument)
-        res.send(user)
+        const query2 = {userA: matchedUserName, userB: username}
+        const updateDocument2 = {
+            $set: {
+                BswipedA: true
+            },
+        }
+        const conditions = {upsert: true}
+        await matches.updateOne(query1, updateDocument1, conditions)
+        await matches.updateOne(query2, updateDocument2, conditions)
+        res.send("swiped")
     } finally {
         await client.close()
     }
@@ -260,8 +302,7 @@ app.put('/user', checkRootLogin, async (req, res) => {
                 gender_identity: formData.gender_identity,
                 gender_interest: formData.gender_interest,
                 url: formData.url,
-                about: formData.about,
-                matches: formData.matches
+                about: formData.about
             },
         }
 
