@@ -7,6 +7,7 @@ const cors = require('cors')
 const bcrypt = require('bcrypt')
 const axios = require('axios')
 const base64 = require('uuid-base64')
+const { response } = require('express')
 require('dotenv').config()
 
 const uri = process.env.URI
@@ -147,7 +148,7 @@ app.get('/user', async (req, res) => {
 
         const query = {username}
         const user = await users.findOne(query)
-        res.send(user)
+        res.send({user})
 
     } finally {
         await client.close()
@@ -156,11 +157,10 @@ app.get('/user', async (req, res) => {
 
 app.get('/matches', async (req, res) => {
     const client = new MongoClient(uri)
-    const {username} = req.query
     try {
+        const {username} = req.query
         await client.connect()
         const database = client.db('app-data')
-        const users = database.collection('users')
         const matches = database.collection('matches')
         query = {
             $and: [
@@ -170,18 +170,14 @@ app.get('/matches', async (req, res) => {
             ]
         }
         const userMatches = await matches.find(query).toArray()
-        matchedUsers = []
-        const getMatchedUsers = (userMatches) => {
-            userMatches.map(async(matches) => {
-                const query = {username: matches.userB}
-                console.log(query)
-                const fuser = await users.findOne(query)
-                matchedUsers.push(fuser)
-            })
-        }
-        await getMatchedUsers(userMatches)
-        res.send(matchedUsers)
-    } finally {
+        matchedUsernames = []
+        userMatches.map(user => {
+            matchedUsernames.push(user.userB)
+        })
+        res.send({matchedUsernames})
+    } catch(error){
+        res.status(401).send({error: "Authentication Problem"})
+    }finally {
         await client.close()
     }
 })
@@ -263,19 +259,45 @@ app.get('/users', async (req, res) => {
     }
 })
 
-// Get all the Gendered Users in the Database
-app.get('/gendered-users', async (req, res) => {
+app.get('/swipable_users', async (req, res) => {
     const client = new MongoClient(uri)
-    const gender = req.query.gender
-
+    
     try {
+        const {username, gender} = req.query
         await client.connect()
         const database = client.db('app-data')
         const users = database.collection('users')
-        const query = {gender_identity: {$eq: gender}}
-        const foundUsers = await users.find(query).toArray()
-        res.json(foundUsers)
+        const matches = database.collection('matches')
+        swipedUsersQuery = {
+            $and: [
+                {userA: username},
+                {AswipedB: true}
+            ]
+        }
+        const swipedUsers = await matches.find(swipedUsersQuery).toArray()
+        swipedUsernames = []
+        swipedUsers.map(user => {
+            swipedUsernames.push(user.userB)
+        })
+        swipedUsernames.push(username)
+        const bothGenders = {
+            $in: ["man", "woman"]
+        }
+        const query = {
+            $and: [
+                {username: 
+                    {$nin: swipedUsernames}
+                },
+                {gender_identity: gender !== "both" ? gender : bothGenders}
+            ]
+        }
 
+        const swipableUsers = await users.find(query).toArray()
+
+        res.json({swipableUsers})
+
+    } catch(error){
+        res.status(401).send({error: "Error"})
     } finally {
         await client.close()
     }

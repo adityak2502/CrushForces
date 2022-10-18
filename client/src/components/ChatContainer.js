@@ -3,7 +3,7 @@ import MatchesDisplay from './MatchesDisplay'
 import ChatDisplay from './ChatDisplay'
 import { useState } from 'react'
 
-const ChatContainer = ({ user , AuthToken}) => {
+const ChatContainer = ({ user , matchedUserNames, AuthToken}) => {
     const [ clickedUser, setClickedUser ] = useState(null)
     return (
         <div className="chat-container">
@@ -14,7 +14,7 @@ const ChatContainer = ({ user , AuthToken}) => {
                 <button className="option" disabled={!clickedUser}>Chat</button>
             </div>
 
-            {!clickedUser && <MatchesDisplay matches={user.matches} setClickedUser={setClickedUser}/>}
+            {!clickedUser && <MatchesDisplay matchedUserNames={matchedUserNames} setClickedUser={setClickedUser}/>}
 
             {clickedUser && <ChatDisplay user={user} clickedUser={clickedUser} AuthToken={AuthToken}/>}
         </div>
