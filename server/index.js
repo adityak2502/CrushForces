@@ -319,10 +319,10 @@ app.put('/user', checkRootLogin, async (req, res) => {
         const updateDocument = {
             $set: {
                 first_name: formData.first_name,
+                last_name: formData.last_name,
                 dob_day: formData.dob_day,
                 dob_month: formData.dob_month,
                 dob_year: formData.dob_year,
-                show_gender: formData.show_gender,
                 gender_identity: formData.gender_identity,
                 gender_interest: formData.gender_interest,
                 url: formData.url,

@@ -140,17 +140,17 @@ nav .logo-container .logo {
     font-size: 17px;
 }
 
-/*-------- OnBoarding Page --------*/
-.onboarding {
+/*-------- Profile Page --------*/
+.profile {
     border-top: solid 1px rgb(213, 213, 213);
 }
 
-.onboarding form {
+.profile form {
     display: flex;
     justify-content: center;
 }
 
-.onboarding form section {
+.profile form section {
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -158,7 +158,7 @@ nav .logo-container .logo {
     text-align: start;
 }
 
-.onboarding form input {
+.profile form input {
     padding: 15px 30px;
     margin: 10px 0;
     font-size: 15px;
@@ -166,26 +166,26 @@ nav .logo-container .logo {
     border-radius: 10px;
 }
 
-.onboarding form label {
+.profile form label {
     margin: 10px 0;
 }
 
-.onboarding form .multiple-input-container {
+.profile form .multiple-input-container {
     display: flex;
     flex-direction: row;
 }
 
-.onboarding form input::-webkit-outer-spin-button,
-.onboarding form input::-webkit-inner-spin-button {
+.profile form input::-webkit-outer-spin-button,
+.profile form input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.onboarding form .multiple-input-container input {
+.profile form .multiple-input-container input {
     margin-right: 10px;
 }
 
-.onboarding form .multiple-input-container label {
+.profile form .multiple-input-container label {
     padding: 10px;
     border: solid 2px rgb(144, 144, 144);
     border-radius: 10px;
@@ -193,27 +193,27 @@ nav .logo-container .logo {
     margin-right: 10px;
 }
 
-.onboarding form input[type=radio] {
+.profile form input[type=radio] {
     display: none;
 }
 
-.onboarding form input[type=number] {
+.profile form input[type=number] {
     width: 10%;
 }
 
-.onboarding form input[type=radio]:checked + label {
+.profile form input[type=radio]:checked + label {
     border: solid 2px rgb(221, 39, 22);
 }
 
-.onboarding form input[type=submit]:hover {
+.profile form input[type=submit]:hover {
     background-color: rgb(235, 235, 235);
 }
 
-.onboarding form input[type=submit]:active {
+.profile form input[type=submit]:active {
     background-color: rgb(226, 115, 115);
 }
 
-.onboarding form .photo-container img {
+.profile form .photo-container img {
     width: 100%
 }
 
