@@ -6,10 +6,10 @@ import axios from 'axios'
 
 const Dashboard = () => {
     const [user, setUser] = useState(null)
-    const [genderedUsers, setGenderedUsers] = useState(null)
     const [lastDirection, setLastDirection] = useState()
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
-
+    const [matchedUserNames, setMatchedUserNames] = useState([])
+    const [swipableUsers, setSwipableUsers] = useState([])
     const Username = cookies.Username
     const AuthToken = cookies.AuthToken
     
@@ -18,34 +18,53 @@ const Dashboard = () => {
             const response = await axios.get('http://localhost:8000/user', {
                 params: {username: Username}
             })
-            setUser(response.data)
+            setUser(response.data.user)
         } catch (error) {
             console.log(error)
         }
     }
-    const getGenderedUsers = async () => {
+    const getSwipableUsers = async () => {
         try {
-            // const response = await axios.get('http://localhost:8000/gendered-users', {
-            //     params: {gender: user?.gender_interest}
-            // })
-            const response = await axios.get('http://localhost:8000/all-users', {
-                params: {gender: user?.gender_interest}
+            const res = await axios.get('http://localhost:8000/swipable_users', {
+                params: { 
+                    username:  Username,
+                    gender: user.gender_interest
+                },
+                headers: {"Authorization" : `Bearer ${AuthToken}`}
             })
-            setGenderedUsers(response.data)
+            console.log(res.data)
+            setSwipableUsers(res.data.swipableUsers)
         } catch (error) {
             console.log(error)
         }
     }
+    
+    const getMatchedUserNames = async() => {
+        try{
+            const res = await axios.get('http://localhost:8000/matches', {
+                params: { username:  Username},
+                headers: {"Authorization" : `Bearer ${AuthToken}`}
+            })
+            setMatchedUserNames(res.data.matchedUsernames)
+        } catch(error) {
+            console.log(error)
+        }
+    }
+    
 
     useEffect(() => {
         getUser()
     }, [])
 
     useEffect(() => {
-        if (user) {
-            getGenderedUsers()
-        }
+        getMatchedUserNames()
     }, [user])
+
+    useEffect(() => {
+        getSwipableUsers()
+    }, [user])
+
+
 
     const updateMatches = async (matchedUserName) => {
         try {
@@ -72,34 +91,28 @@ const Dashboard = () => {
         console.log(name + ' left the screen!')
     }
 
-    const matchedUserNames = user?.matches.map(({username}) => username).concat(Username)
-
-    const filteredGenderedUsers = genderedUsers?.filter(genderedUser => !matchedUserNames.includes(genderedUser.username))
-
-
-    console.log('filteredGenderedUsers ', filteredGenderedUsers)
     return (
         <> 
             {user &&
             <div className="dashboard">
-                <ChatContainer user={user} AuthToken={AuthToken}/>
+                <ChatContainer user={user} matchedUserNames = {matchedUserNames} AuthToken={AuthToken}/>
                 <div className="swipe-container">
                     <div className="card-container">
 
-                        {filteredGenderedUsers?.map((genderedUser) =>
+                        {swipableUsers?.map((swipableUser) =>
                             <TinderCard
                                 className="swipe"
-                                key={genderedUser.username}
-                                onSwipe={(dir) => swiped(dir, genderedUser.username)}
-                                onCardLeftScreen={() => outOfFrame(genderedUser.username)}>
+                                key={swipableUser.username}
+                                onSwipe={(dir) => swiped(dir, swipableUser.username)}
+                                onCardLeftScreen={() => outOfFrame(swipableUser.username)}>
                                 <div
-                                    style={{backgroundImage: "url(" + genderedUser.url + ")"}}
+                                    style={{backgroundImage: "url(" + swipableUser.url + ")"}}
                                     className="card">
-                                    <h3>{genderedUser.username}</h3>
+                                    <h3>{swipableUser.username}</h3>
                                 </div>
                             </TinderCard>
                         )}
-                        {!filteredGenderedUsers?.length && 
+                        {!swipableUsers?.length && 
                             <div>
                                 No more users available to swipe
                             </div>

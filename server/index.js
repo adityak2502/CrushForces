@@ -7,6 +7,7 @@ const cors = require('cors')
 const bcrypt = require('bcrypt')
 const axios = require('axios')
 const base64 = require('uuid-base64')
+const { response } = require('express')
 require('dotenv').config()
 
 const uri = process.env.URI
@@ -147,9 +148,36 @@ app.get('/user', async (req, res) => {
 
         const query = {username}
         const user = await users.findOne(query)
-        res.send(user)
+        res.send({user})
 
     } finally {
+        await client.close()
+    }
+})
+
+app.get('/matches', async (req, res) => {
+    const client = new MongoClient(uri)
+    try {
+        const {username} = req.query
+        await client.connect()
+        const database = client.db('app-data')
+        const matches = database.collection('matches')
+        query = {
+            $and: [
+                {userA: username},
+                {AswipedB: true},
+                {BswipedA: true}
+            ]
+        }
+        const userMatches = await matches.find(query).toArray()
+        matchedUsernames = []
+        userMatches.map(user => {
+            matchedUsernames.push(user.userB)
+        })
+        res.send({matchedUsernames})
+    } catch(error){
+        res.status(401).send({error: "Authentication Problem"})
+    }finally {
         await client.close()
     }
 })
@@ -161,14 +189,24 @@ app.put('/addmatch', checkRootLogin, async (req, res) => {
     try {
         await client.connect()
         const database = client.db('app-data')
-        const users = database.collection('users')
+        const matches = database.collection('matches')
 
-        const query = {username}
-        const updateDocument = {
-            $push: {matches: {username: matchedUserName}}
+        const query1 = {userA: username, userB: matchedUserName}
+        const updateDocument1 = {
+            $set: {
+                AswipedB: true
+            },
         }
-        const user = await users.updateOne(query, updateDocument)
-        res.send(user)
+        const query2 = {userA: matchedUserName, userB: username}
+        const updateDocument2 = {
+            $set: {
+                BswipedA: true
+            },
+        }
+        const conditions = {upsert: true}
+        await matches.updateOne(query1, updateDocument1, conditions)
+        await matches.updateOne(query2, updateDocument2, conditions)
+        res.send("swiped")
     } finally {
         await client.close()
     }
@@ -221,19 +259,47 @@ app.get('/users', async (req, res) => {
     }
 })
 
-// Get all the Gendered Users in the Database
-app.get('/gendered-users', async (req, res) => {
+app.get('/swipable_users', async (req, res) => {
     const client = new MongoClient(uri)
-    const gender = req.query.gender
-
+    
     try {
+        const {username, gender} = req.query
         await client.connect()
         const database = client.db('app-data')
         const users = database.collection('users')
-        const query = {gender_identity: {$eq: gender}}
-        const foundUsers = await users.find(query).toArray()
-        res.json(foundUsers)
+        const matches = database.collection('matches')
+        swipedUsersQuery = {
+            $and: [
+                {userA: username},
+                {AswipedB: true}
+            ]
+        }
+        const swipedUsers = await matches.find(swipedUsersQuery).toArray()
+        swipedUsernames = []
+        swipedUsers.map(user => {
+            swipedUsernames.push(user.userB)
+        })
+        swipedUsernames.push(username)
+        const bothGenders = {
+            $in: ["man", "woman"]
+        }
+        const query = {
+            $and: [
+                {username: 
+                    {$nin: swipedUsernames}
+                },
+                {gender_identity: 
+                    gender !== "everyone" ? gender : bothGenders
+                }
+            ]
+        }
 
+        const swipableUsers = await users.find(query).toArray()
+
+        res.json({swipableUsers})
+
+    } catch(error){
+        res.status(401).send({error: "Error"})
     } finally {
         await client.close()
     }
@@ -260,8 +326,7 @@ app.put('/user', checkRootLogin, async (req, res) => {
                 gender_identity: formData.gender_identity,
                 gender_interest: formData.gender_interest,
                 url: formData.url,
-                about: formData.about,
-                matches: formData.matches
+                about: formData.about
             },
         }
 

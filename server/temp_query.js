@@ -43,3 +43,10 @@ const handleResponse = async() => {
 
 matchedUserNames = ["adityagamer"]
 res = await axios.get("http://localhost:8000/users", {params: { usernames: JSON.stringify(matchedUserNames) },})
+query = {
+  $and: [
+      {userA: username},
+      {AswipedB: true},
+      {BswipedA: true}
+  ]
+}

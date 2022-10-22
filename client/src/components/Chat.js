@@ -1,8 +1,9 @@
-const Chat = ({descendingOrderMessages}) => {
+import ScrollButton from './ScrollButton'; 
+const Chat = ({formattedMessages}) => {
     return (
-        <>
+        <div>
             <div className="chat-display">
-                {descendingOrderMessages.map((message, _index) => (
+                {formattedMessages.map((message, _index) => (
                     <div key={_index}>
                         <div className="chat-message-header">
                             <div className="img-container">
@@ -14,7 +15,7 @@ const Chat = ({descendingOrderMessages}) => {
                     </div>
                 ))}
             </div>
-        </>
+        </div>
     )
 }
 
