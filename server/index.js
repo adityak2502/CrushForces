@@ -288,7 +288,9 @@ app.get('/swipable_users', async (req, res) => {
                 {username: 
                     {$nin: swipedUsernames}
                 },
-                {gender_identity: gender !== "both" ? gender : bothGenders}
+                {gender_identity: 
+                    gender !== "everyone" ? gender : bothGenders
+                }
             ]
         }
 
