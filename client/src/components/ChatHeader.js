@@ -18,7 +18,7 @@ const ChatHeader = ({ user }) => {
                 <div className="img-container">
                     <img src={user.url} alt={"photo of " + user.username}/>
                 </div>
-                <h3>{user.username}</h3>
+                <h3 style={{color: user.color}}>{user.username}</h3>
             </div>
             <i className="log-out-icon" onClick={logout}>⇦</i>
         </div>

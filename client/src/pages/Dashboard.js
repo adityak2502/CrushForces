@@ -108,7 +108,7 @@ const Dashboard = () => {
                                 <div
                                     style={{backgroundImage: "url(" + swipableUser.url + ")"}}
                                     className="card">
-                                    <h3>{swipableUser.username}</h3>
+                                    <h3 style={{color: swipableUser.color}}>{swipableUser.username}</h3>
                                 </div>
                             </TinderCard>
                         )}
