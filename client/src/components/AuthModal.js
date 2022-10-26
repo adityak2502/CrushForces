@@ -47,7 +47,7 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
             axios.post(`http://localhost:8000/${isSignUp ? 'signup' : 'login'}`, { username, password, CFToken, CFJWTToken }).then(res => {
                 setCookie('AuthToken', res.data.token)
                 setCookie('Username', res.data.username)
-                if (isSignUp) navigate('/onboarding')
+                if (isSignUp) navigate('/profile')
                 if (!isSignUp) navigate('/dashboard')
                 window.location.reload()
             }).catch(err => {

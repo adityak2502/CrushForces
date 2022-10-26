@@ -34,6 +34,7 @@ const ChatDisplay = ({ user , clickedUser , AuthToken}) => {
             const formattedMessage = {}
             formattedMessage['name'] = message.from_username
             formattedMessage['img'] = ((message.from_username == Username) ? (user?.url) : (clickedUser?.url))
+            formattedMessage['color'] = ((message.from_username == Username) ? (user.color) : clickedUser?.color)
             formattedMessage['message'] = message.message
             formattedMessage['timestamp'] = message.timestamp
             messages.push(formattedMessage)

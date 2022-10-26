@@ -32,7 +32,7 @@ const MatchesDisplay = ({ matchedUserNames, setClickedUser }) => {
           <div className="img-container">
             <img src={match?.url} alt={match?.username + " profile"} />
           </div>
-          <h3>{match?.username}</h3>
+          <h3 style={{color: match.color}}>{match?.username}</h3>
         </div>
       ))}
     </div>

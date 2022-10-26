@@ -37,6 +37,19 @@ const verify_cf_token = async(curUsername, curCFToken, CFJWTToken) => {
     }
 }
 
+const getColor = (rating) => {
+  if(rating < 1200) return "gray";
+  if(rating < 1400) return "green";
+  if(rating < 1600) return "cyan";
+  if(rating < 1900) return "blue";
+  if(rating < 2100) return "violet";
+  if(rating < 2300) return "orange";
+  if(rating < 2400) return "orange";
+  if(rating < 2600) return "red";
+  if(rating < 3000) return "red";
+  return "red";
+}
+
 const checkRootLogin = async(req, res, next) => {
     try{
         const token = req.header('Authorization').replace('Bearer ', '')
@@ -316,17 +329,23 @@ app.put('/user', checkRootLogin, async (req, res) => {
 
         const query = {username}
 
+        CFres = await axios.get(`https://codeforces.com/api/user.info?handles=${username}`)
+        const rating = CFres.data.result[0].rating
+        const color = getColor(rating)
+
         const updateDocument = {
             $set: {
                 first_name: formData.first_name,
+                last_name: formData.last_name,
                 dob_day: formData.dob_day,
                 dob_month: formData.dob_month,
                 dob_year: formData.dob_year,
-                show_gender: formData.show_gender,
                 gender_identity: formData.gender_identity,
                 gender_interest: formData.gender_interest,
                 url: formData.url,
-                about: formData.about
+                about: formData.about,
+                rating: rating,
+                color: color
             },
         }
 

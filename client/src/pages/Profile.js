@@ -1,10 +1,10 @@
 import Nav from '../components/Nav'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {Cookies, useCookies} from 'react-cookie'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
 
-const OnBoarding = () => {
+const Profile = () => {
     const [cookies, setCookie, removeCookie] = useCookies(null)
     const [formData, setFormData] = useState({
         first_name: "",
@@ -12,14 +12,42 @@ const OnBoarding = () => {
         dob_day: "",
         dob_month: "",
         dob_year: "",
-        show_gender: false,
-        gender_identity: "man",
-        gender_interest: "woman",
+        gender_identity: "",
+        gender_interest: "",
         url: "",
-        about: "",
-        matches: []
-
+        about: ""
     })
+    
+    const setVal = (name, value) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value
+        }))
+    }
+
+    const getUser = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/user', {
+                params: {username: cookies.Username}
+            })
+            const user = response.data.user
+            if(formData.first_name === "") setVal("first_name",user.first_name)
+            if(formData.last_name === "") setVal("last_name",user.last_name)
+            if(formData.dob_day === "") setVal("dob_day",user.dob_day)
+            if(formData.dob_month === "") setVal("dob_month",user.dob_month)
+            if(formData.dob_year === "") setVal("dob_year",user.dob_year)
+            if(formData.gender_identity === "") setVal("gender_identity",user.gender_identity)
+            if(formData.gender_interest === "") setVal("gender_interest",user.gender_interest)
+            if(formData.url === "") setVal("url",user.url)
+            if(formData.about === "") setVal("about",user.about)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getUser()
+    }, [])
     const AuthToken = cookies.AuthToken
     const [submitText, setSubmitText] = useState("Submit")
 
@@ -52,6 +80,7 @@ const OnBoarding = () => {
         }))
     }
 
+
     return (
         <>
             <Nav
@@ -61,7 +90,7 @@ const OnBoarding = () => {
                 showModal={false}
             />
 
-            <div className="onboarding">
+            <div className="profile">
                 <h2>CREATE ACCOUNT</h2>
 
                 <form onSubmit={handleSubmit}>
@@ -140,28 +169,9 @@ const OnBoarding = () => {
                                 checked={formData.gender_identity === "woman"}
                             />
                             <label htmlFor="woman-gender-identity">Woman</label>
-                            <input
-                                id="more-gender-identity"
-                                type="radio"
-                                name="gender_identity"
-                                value="more"
-                                onChange={handleChange}
-                                checked={formData.gender_identity === "more"}
-                            />
-                            <label htmlFor="more-gender-identity">More</label>
                         </div>
 
-                        <label htmlFor="show-gender">Show Gender on my Profile</label>
-
-                        <input
-                            id="show-gender"
-                            type="checkbox"
-                            name="show_gender"
-                            onChange={handleChange}
-                            checked={formData.show_gender}
-                        />
-
-                        <label>Show Me</label>
+                        <label>Interested in</label>
 
                         <div className="multiple-input-container">
                             <input
@@ -215,6 +225,7 @@ const OnBoarding = () => {
                             type="url"
                             name="url"
                             id="url"
+                            value={formData.url}
                             onChange={handleChange}
                             required={true}
                         />
@@ -230,4 +241,4 @@ const OnBoarding = () => {
         </>
     )
 }
-export default OnBoarding
+export default Profile
