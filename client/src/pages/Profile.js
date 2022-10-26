@@ -171,7 +171,7 @@ const Profile = () => {
                             <label htmlFor="woman-gender-identity">Woman</label>
                         </div>
 
-                        <label>Show Me</label>
+                        <label>Interested in</label>
 
                         <div className="multiple-input-container">
                             <input
