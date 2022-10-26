@@ -18,6 +18,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.10.0",
     "nodemon": "^2.0.20",
-    "uuid": "^9.0.0"
+    "react-scroll-to-bottom": "^4.2.0",
+    "uuid": "^9.0.0",
+    "uuid-base64": "^1.0.0"
   }
 }
