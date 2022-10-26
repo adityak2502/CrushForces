@@ -324,50 +324,15 @@ nav .logo-container .logo {
     display: flex;
     flex-direction: column;
 }
+.refresh {
+  position: relative;
+  float: right;
+  background-color: white;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.refresh-button{
+  border-radius: 10em;
+  background-color: white;
+  border: solid 2px rgb(187, 187, 187);
+  color: rgb(184, 171, 171);
+}

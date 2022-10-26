@@ -1,7 +1,8 @@
-import ScrollButton from './ScrollButton'; 
-const Chat = ({formattedMessages}) => {
+import React from 'react';
+
+const Chat = ({getUsersMessages, formattedMessages}) => {
     return (
-        <div>
+        <React.Fragment>
             <div className="chat-display">
                 {formattedMessages.map((message, _index) => (
                     <div key={_index}>
@@ -14,8 +15,11 @@ const Chat = ({formattedMessages}) => {
                         <p>{message.message}</p>
                     </div>
                 ))}
+              <div className='refresh'>
+                <button className="refresh-button" onClick={() => getUsersMessages()}>Refresh Chat</button>
+              </div>
             </div>
-        </div>
+        </React.Fragment>
     )
 }
 

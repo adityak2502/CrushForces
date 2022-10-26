@@ -11,16 +11,15 @@ const ChatDisplay = ({ user , clickedUser , AuthToken}) => {
     const [formattedMessages, setFormattedMessages] = useState([])
 
     const getUsersMessages = async () => {
-     try {
+      try {  
             const response = await axios.get('http://localhost:8000/messages', {
                 params: { username: Username, correspondingUsername: clickedUserName},
                 headers: {"Authorization" : `Bearer ${AuthToken}`}
             })
-            console.log("all set")
             setUsersMessages(response.data)
         } catch (error) {
          console.log(error)
-     }
+      }
     }
 
     useEffect(() => {
@@ -45,13 +44,14 @@ const ChatDisplay = ({ user , clickedUser , AuthToken}) => {
     
 
     return (
+      <>
         <div>
-        {/* <button onClick={() => getUsersMessages()}>Refresh Chat</button> */}
-        <Chat formattedMessages={formattedMessages}/>
-     <ChatInput
-         user={user}
-        clickedUser={clickedUser} getUserMessages={getUsersMessages}  AuthToken = {AuthToken}/>
+          <Chat getUsersMessages={getUsersMessages} formattedMessages={formattedMessages}/>
+          <ChatInput
+            user={user}
+            clickedUser={clickedUser} getUserMessages={getUsersMessages}  AuthToken = {AuthToken}/>
         </div>
+      </> 
     )
 }
 
